@@ -23,25 +23,45 @@ const CHAINS = [
 fetch("https://api.tvmaze.com/schedule?country=FR")
   .then(r => r.json())
   .then(data => {
-    const evening = data.filter(p =>
-      p.airtime >= "20:30" &&
-      p.network &&
-      CHAINS.includes(p.network.name)
-    );
-
     const container = document.getElementById("tv");
 
+    const evening = data.filter(p => {
+      const channel =
+        (p.network && p.network.name) ||
+        (p.webChannel && p.webChannel.name);
+
+      return (
+        channel &&
+        CHAINS.includes(channel) &&
+        p.airtime >= "20:30"
+      );
+    });
+
+    if (evening.length === 0) {
+      container.innerHTML = "❌ Aucun programme trouvé";
+      return;
+    }
+
     evening.forEach(p => {
+      const channel =
+        (p.network && p.network.name) ||
+        (p.webChannel && p.webChannel.name);
+
       const div = document.createElement("div");
       div.className = "channel";
       div.innerHTML = `
-        <div class="title">${p.network.name} – ${p.airtime}</div>
+        <div class="title">${channel} – ${p.airtime}</div>
         <div>${p.show.name}</div>
       `;
       container.appendChild(div);
     });
+  })
+  .catch(err => {
+    document.getElementById("tv").innerText =
+      "Erreur API : " + err;
   });
 </script>
+
 
 </body>
 </html>
