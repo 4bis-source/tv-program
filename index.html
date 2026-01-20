@@ -14,46 +14,14 @@ body { font-family: -apple-system, sans-serif; padding: 1em; }
 <h1>📺 Ce soir à la TV kkej</h1>
 <div id="tv"></div>
 
-<script>
-const today = new Date().toISOString().split("T")[0];
-const url = `https://api.tvmaze.com/schedule?country=FR&date=${today}`;
-
-fetch(url)
-  .then(r => r.json())
-  .then(data => {
-    console.log("TOTAL PROGRAMMES :", data.length);
-
-    const container = document.getElementById("tv");
-
-    if (data.length === 0) {
-      container.innerHTML = "❌ Aucun programme trouvé pour aujourd'hui";
-      return;
-    }
-
-    const evening = data.filter(p =>
-      p.airtime &&
-      p.airtime >= "20:30"
-    );
-
-    evening.slice(0, 20).forEach(p => {
-      const channel =
-        (p.network && p.network.name) ||
-        (p.webChannel && p.webChannel.name) ||
-        "Chaîne inconnue";
-
-      const div = document.createElement("div");
-      div.innerHTML = `
-        <strong>${p.airtime}</strong> — ${p.show.name}<br>
-        <em>${channel}</em><br><br>
-      `;
-      container.appendChild(div);
-    });
-  })
-  .catch(err => {
-    document.getElementById("tv").innerText =
-      "Erreur API : " + err;
-  });
-</script>
+<!-- Widget programme TV 300x220 -->
+<iframe src="https://www.replaytvdirect.fr/progtv-widget.php"
+        marginwidth="0"
+        marginheight="0"
+        frameborder="0"
+        scrolling="no"
+        width="300"
+        height="220"></iframe>
 
 </body>
 </html>
