@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Programme TV ce soir</title>
+<style>
+body { font-family: -apple-system, sans-serif; padding: 1em; }
+.channel { margin-bottom: 1em; }
+.title { font-weight: bold; }
+</style>
+</head>
+<body>
+
+<h1>📺 Ce soir à la TV</h1>
+<div id="tv"></div>
+
+<script>
+const CHAINS = [
+  "TF1", "France 2", "France 3", "M6", "Arte",
+  "C8", "W9", "TMC", "TFX", "RMC Story"
+];
+
+fetch("https://api.tvmaze.com/schedule?country=FR")
+  .then(r => r.json())
+  .then(data => {
+    const evening = data.filter(p =>
+      p.airtime >= "20:30" &&
+      p.network &&
+      CHAINS.includes(p.network.name)
+    );
+
+    const container = document.getElementById("tv");
+
+    evening.forEach(p => {
+      const div = document.createElement("div");
+      div.className = "channel";
+      div.innerHTML = `
+        <div class="title">${p.network.name} – ${p.airtime}</div>
+        <div>${p.show.name}</div>
+      `;
+      container.appendChild(div);
+    });
+  });
+</script>
+
+</body>
+</html>
