@@ -15,6 +15,13 @@ body { font-family: -apple-system, sans-serif; padding: 1em; }
 <div id="tv"></div>
 
 <script>
+
+  fetch("https://api.tvmaze.com/schedule?country=FR")
+  .then(r => r.json())
+  .then(data => {
+    console.log("TOTAL PROGRAMMES:", data.length);
+    console.log(data.slice(0, 5));
+  });
 const CHAINS = [
   "TF1", "France 2", "France 3", "M6", "Arte",
   "C8", "W9", "TMC", "TFX", "RMC Story"
