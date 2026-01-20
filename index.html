@@ -11,54 +11,40 @@ body { font-family: -apple-system, sans-serif; padding: 1em; }
 </head>
 <body>
 
-<h1>📺 Ce soir à la TV kke</h1>
+<h1>📺 Ce soir à la TV kkej</h1>
 <div id="tv"></div>
 
 <script>
+const today = new Date().toISOString().split("T")[0];
+const url = `https://api.tvmaze.com/schedule?country=FR&date=${today}`;
 
-  fetch("https://api.tvmaze.com/schedule?country=FR")
+fetch(url)
   .then(r => r.json())
   .then(data => {
-    console.log("TOTAL PROGRAMMES:", data.length);
-    console.log(data.slice(0, 5));
-  });
-const CHAINS = [
-  "TF1", "France 2", "France 3", "M6", "Arte",
-  "C8", "W9", "TMC", "TFX", "RMC Story"
-];
+    console.log("TOTAL PROGRAMMES :", data.length);
 
-fetch("https://api.tvmaze.com/schedule?country=FR")
-  .then(r => r.json())
-  .then(data => {
     const container = document.getElementById("tv");
 
-    const evening = data.filter(p => {
-      const channel =
-        (p.network && p.network.name) ||
-        (p.webChannel && p.webChannel.name);
-
-      return (
-        channel &&
-        CHAINS.includes(channel) &&
-        p.airtime >= "20:30"
-      );
-    });
-
-    if (evening.length === 0) {
-      container.innerHTML = "❌ Aucun programme trouvé";
+    if (data.length === 0) {
+      container.innerHTML = "❌ Aucun programme trouvé pour aujourd'hui";
       return;
     }
 
-    evening.forEach(p => {
+    const evening = data.filter(p =>
+      p.airtime &&
+      p.airtime >= "20:30"
+    );
+
+    evening.slice(0, 20).forEach(p => {
       const channel =
         (p.network && p.network.name) ||
-        (p.webChannel && p.webChannel.name);
+        (p.webChannel && p.webChannel.name) ||
+        "Chaîne inconnue";
 
       const div = document.createElement("div");
-      div.className = "channel";
       div.innerHTML = `
-        <div class="title">${channel} – ${p.airtime}</div>
-        <div>${p.show.name}</div>
+        <strong>${p.airtime}</strong> — ${p.show.name}<br>
+        <em>${channel}</em><br><br>
       `;
       container.appendChild(div);
     });
@@ -68,7 +54,6 @@ fetch("https://api.tvmaze.com/schedule?country=FR")
       "Erreur API : " + err;
   });
 </script>
-
 
 </body>
 </html>
